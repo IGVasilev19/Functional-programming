@@ -72,8 +72,8 @@ checkStringContainsCandidate candidate decryptStr =
         Just (headCan, tailCan) ->
             case String.uncons decryptStr of
                 Just (head, tail) ->
-                    if headCan == head then
-                        tailCan == String.left (String.length tailCan) tail
+                    if headCan == head && tailCan == String.left (String.length tailCan) tail then
+                        True
                     else
                         checkStringContainsCandidate candidate tail
                 Nothing ->
@@ -82,35 +82,28 @@ checkStringContainsCandidate candidate decryptStr =
             False
 
 checkAllCandidatesForAString: List String -> String -> Bool
-checkAllCandidatesForAString candidates decryptStr =
-    case List.head candidates of
-        Just head ->
+checkAllCandidatesForAString listCandidates decryptStr =
+    case listCandidates of
+        head :: tail ->
             if checkStringContainsCandidate head decryptStr then
                 True
             else
-                case List.tail candidates of
-                    Just tail ->
-                        checkAllCandidatesForAString tail decryptStr
-                    Nothing ->
-                        False
-        Nothing ->
-            case List.tail candidates of
-                    Just tail ->
-                        checkAllCandidatesForAString tail decryptStr
-                    Nothing ->
-                        False
-                
+                checkAllCandidatesForAString tail decryptStr
+        [] ->
+            False
 
--- candidates: List String -> String -> List (Int, String)
--- candidates listCandidates strToDecrypt =
---     List.range 1 25
---         |> List.filterMap (\shift-> 
---         if checkStringContainsCandidate 
-
---         )
-
-        
-
+candidates: List String -> String -> List (Int, String)
+candidates listCandidates strToDecrypt =
+    List.range 1 25
+        |> List.filterMap (\key -> 
+        let 
+            decryptStr = decrypt key strToDecrypt
+        in 
+            if checkAllCandidatesForAString listCandidates decryptStr then
+                Just (key, decryptStr)
+            else
+                Nothing
+        )
 
 
 
